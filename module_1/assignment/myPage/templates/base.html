@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Message Board - {% block title %}{% endblock title %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  {% block banner_top %}
+    <div class="banner" style="width: 90%;">
+      <div class="banner-links">
+        <a href="{{ url_for('pages.home') }}">Home</a>
+        <a href="{{ url_for('pages.about') }}">About</a>
+        <a href="{{ url_for('pages.projects') }}">Projects</a>
+        <a href="{{ url_for('pages.contact') }}">Contact</a>
+      </div>
+    </div>
+  {% endblock banner_top %}
+  {# {% include("_navigation.html") %} #}
+  <section>
+    <header>
+      {% block header %}{% endblock header %}
+    </header>
+    <main>
+      {% block content %}<p>No messages.</p>{% endblock content %}
+    </main>
+  </section>
+  {% block banner_bottom %}{% endblock banner_bottom %}
+</body>
+</html>

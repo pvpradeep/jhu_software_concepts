@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <div style="width: 80%; margin: 0 auto; text-align: left;">
+    <h2>{% block title %}Pradeep Prasanna (He/Him){% endblock title %}</h2>
+    <h3>Software Engineer at Nokia</h3>
+  </div>
+{% endblock header %}
+
+{% block content %}
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 80%; margin: 0 auto;">
+    <div style="text-align: left; flex: 1;">
+      <p>
+        Welcome to my personal website!
+        Software Engineer with a passion for building web applications and exploring new technologies.
+      </p>
+    </div>
+    <img src="{{ url_for('static', filename='tmpProfile.jpg') }}" alt="Profile Image" style="max-width: 400px; height: auto; margin-left: 30px; border-radius: 8px;">
+  </div>
+{% endblock content %}
