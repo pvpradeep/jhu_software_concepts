@@ -116,16 +116,19 @@
   </style>
 </head>
 <body>
-  {% block banner_top %}
-    <div class="banner">
-      <div class="banner-links">
-        <a href="{{ url_for('pages.home') }}">About</a>
-        <a href="{{ url_for('pages.projects') }}">Projects</a>
-        <a href="{{ url_for('pages.contact') }}">Contact</a>
-        <span style="margin-left: 30px;"></span>
-      </div>
+ {% block banner_top %}
+  <div class="banner">
+    <div class="banner-links">
+      <a href="{{ url_for('pages.home') }}"
+         class="{{ 'active' if request.endpoint == 'pages.home' else '' }}">About</a>
+      <a href="{{ url_for('pages.projects') }}"
+         class="{{ 'active' if request.endpoint == 'pages.projects' else '' }}">Projects</a>
+      <a href="{{ url_for('pages.contact') }}"
+         class="{{ 'active' if request.endpoint == 'pages.contact' else '' }}">Contact</a>
+      <span style="margin-left: 30px;"></span>
     </div>
-  {% endblock banner_top %}
+  </div>
+ {% endblock banner_top %}
   <section>
     <header>
       {% block header %}{% endblock header %}
