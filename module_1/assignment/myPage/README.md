@@ -68,7 +68,6 @@ myPage/
     base.html
     pages/
       home.html
-      about.html
       projects.html
       contact.html
 ```
