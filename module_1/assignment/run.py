@@ -1,3 +1,10 @@
+"""
+run.py
+
+Entry point to start the Flask application.
+Creates the app instance by importing from the package's __init__.py
+and runs the server on localhost port 8080.
+"""
 from myPage import create_app
 
 app = create_app()

@@ -1,11 +1,20 @@
+<!--
+base.html
+
+Base layout template used by all other page templates.
+Contains common HTML structure like <head>, navigation bar, and footer.
+Defines blocks to be overridden by child templates
+(Child templates will extend this and fill `content` blocks.).
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Message Board - {% block title %}{% endblock title %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Rubik', sans-serif;
       line-height: 1.6;
       margin: 30px;
       background-color: #f9f9f9;
@@ -84,7 +93,7 @@
       color: #0056b3;
     }
     img.profile-img {
-      max-width: 180px;
+      max-width: 380px;
       height: auto;
       margin-left: 30px;
       border-radius: 8px;
@@ -116,6 +125,10 @@
   </style>
 </head>
 <body>
+  <!-- Banner Section -->
+  <!-- Highlight the active page link -->
+  <!-- Use request.endpoint to determine the current page -->
+  <!-- Add 'active' class to the current page link for styling (ref style.css)-->
  {% block banner_top %}
   <div class="banner">
     <div class="banner-links">
