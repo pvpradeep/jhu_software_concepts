@@ -53,3 +53,11 @@ main {
 .banner-links a:hover {
   color: #0056b3;
 }
+
+.main-block {
+  width: 80%;
+  margin: 0 auto;
+  text-align: left;
+  padding-left: 0;
+  box-sizing: border-box;
+}

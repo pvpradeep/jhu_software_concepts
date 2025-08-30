@@ -3,19 +3,130 @@
 <head>
   <title>Message Board - {% block title %}{% endblock title %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 30px;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    .main-block, .about-container, .card-container {
+      background: #fff;
+      padding: 20px;
+      max-width: 700px;
+      margin: 30px auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-sizing: border-box;
+    }
+    h1, h2, h3, h4 {
+      color: #2c3e50;
+      text-align: left;
+      margin-top: 0;
+    }
+    p {
+      margin-bottom: 15px;
+    }
+    .about-container {
+      /* For backward compatibility if used elsewhere */
+    }
+    .card-container {
+      display: flex;
+      gap: 24px;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      max-width: 1000px;
+    }
+    .card {
+      background: #fff;
+      border: 1.5px solid #4aa8a0;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      padding: 24px;
+      width: 300px;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .edit-btn {
+      align-self: flex-end;
+      background: #4aa8a0;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 16px;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    .edit-btn:hover {
+      background: #007bff;
+    }
+    .banner {
+      border: 2px solid cyan;
+      margin: 20px auto 0 auto;
+      padding: 10px 0;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      background: #4aa8a0;
+      width: 90%;
+      box-sizing: border-box;
+    }
+    .banner-links a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: #0d2e50;
+      font-weight: bold;
+    }
+    .banner-links a:hover {
+      color: #0056b3;
+    }
+    img.profile-img {
+      max-width: 180px;
+      height: auto;
+      margin-left: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    }
+    @media (max-width: 900px) {
+      .card-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .main-block {
+        max-width: 98vw;
+      }
+    }
+    @media (max-width: 700px) {
+      .main-block, .about-container {
+        max-width: 98vw;
+        padding: 10px;
+      }
+      .banner {
+        width: 98vw;
+        font-size: 16px;
+      }
+      img.profile-img {
+        max-width: 100px;
+        margin-left: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
   {% block banner_top %}
-    <div class="banner" style="width: 90%;">
+    <div class="banner">
       <div class="banner-links">
         <a href="{{ url_for('pages.home') }}">Home</a>
         <a href="{{ url_for('pages.about') }}">About</a>
         <a href="{{ url_for('pages.projects') }}">Projects</a>
         <a href="{{ url_for('pages.contact') }}">Contact</a>
+        <span style="margin-left: 30px;"></span>
       </div>
     </div>
   {% endblock banner_top %}
-  {# {% include("_navigation.html") %} #}
   <section>
     <header>
       {% block header %}{% endblock header %}

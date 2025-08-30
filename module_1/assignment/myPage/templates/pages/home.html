@@ -1,20 +1,18 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <div style="width: 80%; margin: 0 auto; text-align: left;">
+  <div class="main-block">
     <h2>{% block title %}Pradeep Prasanna (He/Him){% endblock title %}</h2>
     <h3>Software Engineer at Nokia</h3>
   </div>
 {% endblock header %}
 
 {% block content %}
-  <div style="display: flex; align-items: center; justify-content: space-between; width: 80%; margin: 0 auto;">
-    <div style="text-align: left; flex: 1;">
-      <p>
-        Welcome to my personal website!
-        Software Engineer with a passion for building web applications and exploring new technologies.
-      </p>
-    </div>
-    <img src="{{ url_for('static', filename='tmpProfile.jpg') }}" alt="Profile Image" style="max-width: 400px; height: auto; margin-left: 30px; border-radius: 8px;">
+  <div class="main-block" style="max-width: 700px;">
+    <img src="{{ url_for('static', filename='tmpProfile.jpg') }}" alt="Profile Image"
+         style="float: right; max-width: 380px; height: auto; border-radius: 8px; margin-left: 24px; margin-bottom: 12px;">
+    <p>My name is Pradeep and I live in California. I am currently taking prerequisite courses for the MS in AI program at JHU.</p>
+    <p>I have a background in software development, with experience designing and building networking and routing platforms. My daily work involves developing new software and working on distributed systems. I really enjoy diving into technical details, solving challenges, and shaping ideas into practical solutions.</p>
+    <p>Outside of work and studies, I love hiking and traveling. The picture you see here is from a Rim‑to‑Rim hike I completed at the Grand Canyon last year — one of my favorite outdoor experiences so far!</p>
   </div>
 {% endblock content %}
