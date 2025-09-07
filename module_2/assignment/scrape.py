@@ -12,7 +12,7 @@ http = urllib3.PoolManager()
 applicant_data_file = 'applicant_data.json'
 records = []
 
-def isStartOfNewRecord(row):
+def _isStartOfNewRecord(row):
     # this seems to be the only way to identify start of new record
     div = row.find('div', class_='tw-font-medium tw-text-gray-900 tw-text-sm') 
     #there should be some text in the div
@@ -20,7 +20,7 @@ def isStartOfNewRecord(row):
         return True
     return False
    
-def scrape_one_page(page_number):
+def _scrape_one_page(page_number):
     url = surveys.format(page_number)
     print("Scraping ", url)
 
@@ -43,7 +43,7 @@ def scrape_one_page(page_number):
     while i < len(rows):
         row = rows[i]
         commentRow = False
-        if (isStartOfNewRecord(row)):
+        if (_isStartOfNewRecord(row)):
             record, commentRow = clean_data(rows, i)
             if record:
                 #print_record(record)
@@ -54,7 +54,7 @@ def scrape_one_page(page_number):
         else:
             i += 1 # move to next row        
 
-def save_data_once(records, filename):
+def _save_data_batch(records, filename):
     # Save records to a JSON file
     '''
     with open(filename, 'a', encoding='utf-8') as f:
@@ -86,7 +86,7 @@ def scrape_page(nPage, max_records):
     nRecords = 0
     
     while nRecords < max_records:
-        scrape_one_page(nPage)
+        _scrape_one_page(nPage)
         nPage += 1
         nRecords += len(records)       
 

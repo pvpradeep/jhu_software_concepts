@@ -1,19 +1,19 @@
 
 urlBase = "https://www.thegradcafe.com"
 
-def print_record(record, indent=0):
+def _print_record(record, indent=0):
     indent_str = " " * indent
     for key, value in record.items():
         # If value is a dictionary, print recursively with extra indent
         if isinstance(value, dict):
             print(f"{indent_str}{key}:")
-            print_record(value, indent + 4)
+            _print_record(value, indent + 4)
         else:
             print(f"{indent_str}{key}: {value}")
     print()  # Blank line after each record
 
 
-def getDetailUrlFromRow(row):
+def _getDetailUrlFromRow(row):
     # Search for the <a> tag with href containing '/result/' anywhere inside the row:
     detail_link = row.find('a', string='See More')
     detail_url = None
@@ -26,7 +26,7 @@ def getDetailUrlFromRow(row):
         #print("Detail URL found:", detail_url)
     return detail_url
 
-def isNotesRow(row):
+def _isNotesRow(row):
     # this seems to be the only way to identify Notes row    
     div = row.find('p', class_='tw-text-gray-500 tw-text-sm tw-my-0')
 
@@ -97,7 +97,7 @@ def clean_data(rows, i):
             PhD                                 >> degree.     spans[1]
         '''
 
-        detail_url = getDetailUrlFromRow(row1)
+        detail_url = _getDetailUrlFromRow(row1)
         record["url"]      = detail_url if len(detail_url) > 1 else "N/A"
         #print("Detail URL from Row2:", detail_url)
         
@@ -146,13 +146,13 @@ def clean_data(rows, i):
         GPA 3.62
         '''
         commentRow = False
-        if (isNotesRow(row3)):
+        if (_isNotesRow(row3)):
             row3_cols = row3.find_all('td')
             row3_data = [col.get_text(strip=True) or "N/A" for col in row3_cols]
             record["comments"] = row3_data[0] if len(row3_data[0]) > 1 else "N/A" 
             commentRow = True
 
-        #print_record(record)
+        #_print_record(record)
         return record, commentRow
 
         '''
@@ -164,7 +164,7 @@ def clean_data(rows, i):
         '''
 
         """
-        detail_url = getDetailUrlFromRow(row)
+        detail_url = _getDetailUrlFromRow(row)
         summary_cols = row.find_all('td')
         summary_data = [col.get_text(strip=True) or "N/A" for col in summary_cols]
         if detail_url != None:
