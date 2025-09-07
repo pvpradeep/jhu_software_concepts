@@ -1,0 +1,11 @@
+
+../llm_hosting % cp ../applicant_data.json .
+../llm_hosting % python3 app.py --file "applicant_data.json" > out.json
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/huggingface_hub/file_download.py:939: FutureWarning: The `force_filename` parameter is deprecated as a new caching system, which keeps the filenames as they are on the Hub, is now in place.
+  warnings.warn(
+  /Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/huggingface_hub/file_download.py:982: UserWarning: `local_dir_use_symlinks` parameter is deprecated and will be ignored. The process to download files to a local folder has been updated and do not rely on symlinks anymore. You only need to pass a destination folder as`local_dir`.
+  For more details, check out https://huggingface.co/docs/huggingface_hub/main/en/guides/download#download-files-to-local-folder.
+    warnings.warn(
+
+
+
