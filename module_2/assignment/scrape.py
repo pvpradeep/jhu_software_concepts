@@ -15,7 +15,6 @@ records = []
 def isStartOfNewRecord(row):
     # this seems to be the only way to identify start of new record
     div = row.find('div', class_='tw-font-medium tw-text-gray-900 tw-text-sm') 
-
     #there should be some text in the div
     if div and div.get_text(strip=True):
         return True

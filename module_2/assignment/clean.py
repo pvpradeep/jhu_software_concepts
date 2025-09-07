@@ -28,19 +28,35 @@ def getDetailUrlFromRow(row):
 
 def isNotesRow(row):
     # this seems to be the only way to identify Notes row    
-    div = row.find('div', class_='tw-text-gray-500 tw-text-sm tw-my-0') 
+    div = row.find('p', class_='tw-text-gray-500 tw-text-sm tw-my-0')
 
     #there should be some text in the div
     if div and div.get_text(strip=True):
+        #print("Notes row found:", div.get_text(strip=True))
         return True
     return False
 
+# to ensure empty fields have a "none" or "" value
+record_template = {
+    "program": "",
+    "Degree": "",
+    "date_added": "",
+    "status": "",
+    "url": "",
+    "term": "",
+    "US/International": "",
+    "GRE": "",
+    "GRE V": "",
+    "GRE AW": "",
+    "GPA": "",
+    "comments": ""
+}       
 
 def clean_data(rows, i):        
         row1 = rows[i]
         row2 = rows[i+1]
         row3 = rows[i+2]
-        record = {}
+        record = record_template.copy()
             
         row1_cols = row1.find_all('td')
         row1_data = [col.get_text(strip=True) or "N/A" for col in row1_cols]
