@@ -57,8 +57,8 @@ def clean_data(rows, i):
         else:
             record["program"] = program if program != "N/A" else university 
         record["Degree"]      = spans[1].get_text(strip=True) if len(spans) > 1 else "N/A"
-        record["date_added"]  = row1_data[2] if len(row1_data[1]) > 2 else "N/A"        
-        record["status"]      = row1_data[3] if len(row1_data[3]) > 1 else "N/A"
+        record["date_added"]  = row1_data[2] if len(row1_data) > 2 and len(row1_data[2]) > 1 else "N/A"        
+        record["status"]      = row1_data[3] if len(row1_data) > 3 and len(row1_data[3]) > 1 else "N/A"
 
         '''
         #print("Row2 Data:", row2_data)
@@ -85,13 +85,13 @@ def clean_data(rows, i):
         record["url"]      = detail_url if len(detail_url) > 1 else "N/A"
         #print("Detail URL from Row2:", detail_url)
         
-        row2_cols = row2.find_all('td')
-        row2_data = [col.get_text(strip=True) or "N/A" for col in row2_cols]
+        #row2_cols = row2.find_all('td')
+        #row2_data = [col.get_text(strip=True) or "N/A" for col in row2_cols]
         
         all_divs = row2.find_all('div')
         row2_divs = [div.get_text(strip=True) or "N/A" for div in all_divs]
-        record["term"]              = row2_divs[2] if len(row2_divs[2]) > 1 else "N/A"
-        record["US/International"]  = row2_divs[3] if len(row2_divs[3]) > 2 else "N/A"
+        record["term"]              = row2_divs[2] if len(row2_divs) > 2 and len(row2_divs[2]) > 1 else "N/A"
+        record["US/International"]  = row2_divs[3] if len(row2_divs) > 3 and len(row2_divs[3]) > 1 else "N/A"
 
         ## Rest of the fields may / may not be present, this is sorted with longest first to avoid partial matches
         ## maybe try regex later
@@ -136,7 +136,7 @@ def clean_data(rows, i):
             record["comments"] = row3_data[0] if len(row3_data[0]) > 1 else "N/A" 
             commentRow = True
 
-        print_record(record)
+        #print_record(record)
         return record, commentRow
 
         '''
@@ -162,3 +162,12 @@ def clean_data(rows, i):
             #print("No detail URL found for row:", summary_data)
         
         """
+
+def open_data(filename):
+    # Open and read records from a JSON file
+    records = []
+    with open(filename, 'r', encoding='utf-8') as f:
+        for line in f:
+            record = json.loads(line)
+            records.append(record)
+    return records
