@@ -14,6 +14,6 @@
                     - we already have the remaining records from gradcafe
                       in the db.
         c. two records is an optimization - can be improved to a ring buffer/similar later.
-
+    3. Installed pgAdmin4 to run queries and see db entries etc on a GUI.
 
 

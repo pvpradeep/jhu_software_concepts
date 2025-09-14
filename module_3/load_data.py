@@ -3,10 +3,12 @@ import psycopg_pool
 import psycopg
 from psycopg_pool import ConnectionPool
 import json
+import time
 from datetime import datetime
+from query_data import print_load_summary ,print_query_results
 
 from config import DSN, JSON_DATA_FILEPATH, JSON_DATA_FILENAME
-from database_queries import print_records
+from query_data import print_records
 
 MAX_MARKERS = 2
 
@@ -171,6 +173,10 @@ def process_json_files():
 
   print(f"Total records added to db: {total_records}")
 
+def fetch_new_data(pool):
+    print("Starting dummy fetch...")
+    time.sleep(5)  # sleep 5 seconds to simulate delay
+    print("Dummy fetch done.")
 
 def create_db(mainPool):
   global pool
@@ -183,3 +189,16 @@ def close_pool(pool):
   pool.close()
   print("Connection pool closed.")
 
+pool = ConnectionPool(DSN)
+
+def init_db():
+    try:
+        reset_db(pool)
+        create_db(pool)
+        print_load_summary(pool)
+        print_query_results(pool)
+    
+    finally:
+        #close_pool(pool)
+        print("Database initialization and summary complete.")
+        return pool

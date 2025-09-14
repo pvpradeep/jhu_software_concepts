@@ -18,7 +18,7 @@ def print_records(records, x = 3, header = None):
       print(f"... and {len(records) - x} more records")
   print("" + "="*40)
 
-def show_db_summary(pool):
+def print_load_summary(pool):
   with pool.connection() as conn:
     with conn.cursor() as cur:
       cur.execute('SELECT COUNT(*) FROM gradrecords')
@@ -50,7 +50,8 @@ decimal places)?
 10. 
 '''
 
-def summarize_db(pool):
+## retain this function for now - to check on terminal
+def print_query_results(pool):
   with pool.connection() as conn:
     with conn.cursor() as cur:
       print("\n" + "="*60)
@@ -200,9 +201,156 @@ def summarize_db(pool):
       outl_percentage = (greaw_outliers / gre_aw_valid_count * 100) if gre_aw_valid_count > 0 else 0
       print(f".   GRE AW outliers: {greaw_outliers}, Percentage of GPA outliers: {outl_percentage:.2f}%")
 
+def getQ1(cur):
+    cur.execute("SELECT COUNT(*) FROM gradrecords WHERE term = 'Fall 2025'")
+    count = cur.fetchone()[0]
+    return f"Number of entries in Fall 2025: {count}"
 
+def getQ2(cur):
+    cur.execute("SELECT COUNT(*) FROM gradrecords WHERE us_or_international NOT IN ('American')")
+    international_count = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM gradrecords WHERE us_or_international IS NOT NULL")
+    total_count = cur.fetchone()[0]
+    percentage = (international_count / total_count * 100) if total_count > 0 else 0
+    return f"Percentage of international students: {percentage:.2f}%"
 
-def output_to_json_file(data, filename):
-  with open(filename, 'w') as f:
-    json.dump(data, f, indent=4)
-  print(f"Data written to {filename}")
+def getQ3(cur):
+    cur.execute(f"SELECT AVG(gpa) FROM gradrecords WHERE gpa != 0")
+    gpa_avg = cur.fetchone()[0]
+    cur.execute(f"SELECT AVG(gre) FROM gradrecords WHERE gre != 0")
+    gre_avg = cur.fetchone()[0]
+    cur.execute(f"SELECT AVG(gre_v) FROM gradrecords WHERE gre_v != 0")
+    gre_v_avg = cur.fetchone()[0]
+    cur.execute(f"SELECT AVG(gre_aw) FROM gradrecords WHERE gre_aw != 0")
+    gre_aw_avg = cur.fetchone()[0]
+
+    return (f"Average GPA: {gpa_avg:>6.2f}    "
+            f"     Average GRE: {gre_avg:>6.2f}    "
+            f"     Average GRE V: {gre_v_avg:>6.2f}    "
+            f"     Average GRE AW: {gre_aw_avg:>6.2f}")
+    
+def getQ4(cur):
+    cur.execute("""
+      SELECT AVG(gpa) 
+      FROM gradrecords 
+      WHERE us_or_international = 'American' AND term = 'Fall 2025' AND gpa != 0
+    """)
+    avg_gpa_american_fall_2025 = cur.fetchone()[0]
+    return f"Average GPA of American students in Fall 2025: {avg_gpa_american_fall_2025:.2f}"
+
+def getQ5(cur):
+    cur.execute("SELECT COUNT(*) FROM gradrecords WHERE term = 'Fall 2025'")
+    fall_2025_count = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM gradrecords WHERE term = 'Fall 2025' AND status ILIKE '%accepted%'")
+    accepted_fall_2025_count = cur.fetchone()[0]
+    acceptance_percentage_fall_2025 = (accepted_fall_2025_count / fall_2025_count * 100) if fall_2025_count > 0 else 0
+    return f"Percentage of Acceptances for Fall 2025: {acceptance_percentage_fall_2025:.2f}%"
+
+def getQ6(cur):
+    cur.execute("""
+      SELECT AVG(gpa) 
+      FROM gradrecords 
+      WHERE term = 'Fall 2025' AND status ILIKE '%accepted%' AND gpa != 0
+    """)
+    avg_gpa_accepted_fall_2025 = cur.fetchone()[0]
+    return f"Average GPA of Acceptances for Fall 2025: {avg_gpa_accepted_fall_2025:.2f}"
+
+def getQ7(cur):
+    cur.execute("""
+      SELECT COUNT(*) 
+      FROM gradrecords 
+      WHERE program ILIKE '%computer science%' AND degree ILIKE '%master%'
+    """)
+    jhu_cs_masters_count = cur.fetchone()[0]
+    return f"Total entries for JHU(to-do) Computer Science Masters: {jhu_cs_masters_count}"
+
+def getQ8(cur):
+    cur.execute("""
+      SELECT COUNT(*) 
+      FROM gradrecords 
+      WHERE term = 'Fall 2025' AND status ILIKE '%accepted%' 
+        AND llm_generated_university ILIKE '%georgetown%' 
+        AND llm_generated_program ILIKE '%computer science%' 
+        AND degree ILIKE '%phd%'
+    """)
+    georgetown_cs_phd_accepted_2025_count = cur.fetchone()[0]
+    return f"Ans: Total acceptances for Georgetown Computer Science PhD in Fall 2025: {georgetown_cs_phd_accepted_2025_count}"
+
+def getQ9(cur):
+    max_gpa = 4.0
+    max_gre = 340
+    max_gre_v = 170
+    max_gre_aw = 6.0
+
+    cur.execute(f"SELECT AVG(gpa) FROM gradrecords WHERE gpa !=0 AND gpa <= {max_gpa}")
+    avg_gpa = cur.fetchone()[0]
+
+    cur.execute(f"SELECT AVG(gre) FROM gradrecords WHERE gre != 0 AND gre <= {max_gre}")
+    avg_gre = cur.fetchone()[0]
+
+    cur.execute(f"SELECT AVG(gre_v) FROM gradrecords WHERE gre_v !=0 AND gre_v <= {max_gre_v}")
+    avg_gre_v = cur.fetchone()[0]
+
+    cur.execute(f"SELECT AVG(gre_aw) FROM gradrecords WHERE gre_aw !=0 AND gre_aw <= {max_gre_aw}")
+    avg_gre_aw = cur.fetchone()[0]
+    return (f"Average GPA (no outliers): {avg_gpa:>6.2f},"
+            f"     Average GRE (no outliers): {avg_gre:>6.2f},"
+            f"     Average GRE V (no outliers): {avg_gre_v:>6.2f},"
+            f"     Average GRE AW (no outliers): {avg_gre_aw:>6.2f}")
+
+def getQ10(cur):
+    max_gpa = 4.0
+    max_gre = 340
+    max_gre_v = 170
+    max_gre_aw = 6.0
+
+    cur.execute(f"SELECT COUNT(*) FROM gradrecords WHERE gpa !=0 AND gpa > {max_gpa}")
+    gpa_outliers = cur.fetchone()[0]
+    cur.execute(f"SELECT COUNT(*) FROM gradrecords WHERE gpa !=0")
+    gpa_valid_count = cur.fetchone()[0]
+    gpa_outl_percentage = (gpa_outliers / gpa_valid_count * 100) if gpa_valid_count > 0 else 0
+
+    cur.execute(f"SELECT COUNT(*) FROM gradrecords WHERE gre != 0 AND gre > {max_gre}")
+    gre_outliers = cur.fetchone()[0]
+    cur.execute(f"SELECT COUNT(*) FROM gradrecords WHERE gre != 0")
+    gre_valid_count = cur.fetchone()[0]
+    gre_outl_percentage = (gre_outliers / gre_valid_count * 100) if gre_valid_count > 0 else 0
+
+    cur.execute(f"SELECT COUNT(*) FROM gradrecords WHERE gre_v != 0 AND gre_v > {max_gre_v}")
+    grev_outliers = cur.fetchone()[0]
+    cur.execute(f"SELECT COUNT(*) FROM gradrecords WHERE gre_v != 0")
+    gre_v_valid_count = cur.fetchone()[0]
+    grev_outl_percentage = (grev_outliers / gre_v_valid_count * 100) if gre_v_valid_count > 0 else 0
+
+    cur.execute(f"SELECT COUNT(*) FROM gradrecords WHERE gre_aw != 0 AND gre_aw > {max_gre_aw}")
+    greaw_outliers = cur.fetchone()[0]
+    cur.execute(f"SELECT COUNT(*) FROM gradrecords WHERE gre_aw != 0")
+    gre_aw_valid_count = cur.fetchone()[0]
+    greaw_outl_percentage = (greaw_outliers / gre_aw_valid_count * 100) if gre_aw_valid_count > 0 else 0
+
+    return (f"\nGPA outliers: {gpa_outliers}, Percentage of GPA outliers: {gpa_outl_percentage:>6.2f}%\n"
+            f"GRE outliers: {gre_outliers}, Percentage of GRE outliers: {gre_outl_percentage:>6.2f}%\n"
+            f"GRE V outliers: {grev_outliers}, Percentage of GRE V outliers: {grev_outl_percentage:>6.2f}%\n"
+            f"GRE AW outliers: {greaw_outliers}, Percentage of GRE AW outliers: {greaw_outl_percentage:>6.2f}%")
+
+def get_db_summary(pool):
+    queries_and_functions = [
+        ("How many entries do you have in your database who have applied for Fall 2025?",getQ1),
+        ("What percentage of entries are from interna5onal students (not American or Other) (to two decimal places)?",getQ2),
+        ("What is the average GPA, GRE, GRE V, GRE AW of applicants who provide these metrics?",getQ3),
+        ("What is the average GPA of American students in Fall 2025?",getQ4),
+        ("What percent of entries for Fall 2025 are Acceptances (to two decimal places)?",getQ5),
+        ("What is the average GPA of applicants who applied for Fall 2025 who are Acceptanced?",getQ6),
+        ("How many entries are from applicants who applied to JHU for a masters degrees in Computer Science?",getQ7),
+        ("How many entries from 2025 are acceptances from applicants who applied to Georgetown University for a PhD in Computer Science?",getQ8),
+        ("Calculate averages excluding outliers",getQ9),
+        ("Find number of outliers and % of outliers",getQ10)
+    ]
+    results = []
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            for description, func in queries_and_functions:
+                result = func(cur)
+                results.append((description, result))
+    return results
+
