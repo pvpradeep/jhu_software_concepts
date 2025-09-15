@@ -10,43 +10,45 @@ atexit.register(lambda: pool.close())
 
 app = Flask(__name__)
 
-def get_db_connection():
-  """A function to connect to the database"""
-  conn = psycopg.connect(os.environ['DATABASE_URL'])
-  return conn
-
-@app.route('/create/', methods=('GET', 'POST'))
-def create():
-  """A function to create a new course and add to database"""
-  if request.method == 'POST':
-    id = request.form['id']
-    name = request.form['name']
-    instructor = request.form['instructor']
-    room_number = request.form['room_number']
-    print(id, name, instructor, room_number)
-
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("""
-      INSERT INTO courses(id, name, instructor, room_number)
-      VALUES (%s, %s, %s, %s)""",
-      (id, name, instructor, room_number)
-      )
-    conn.commit()
-    cur.close()
-    conn.close()
-    return redirect(url_for('index'))
-  return render_template('create.html')
-
-
+#Keep pool open till sigint or close
 pool = init_db()
+
+#Control update function  - only on button-click
+update_summary = 1
 
 @app.route('/')
 def summary():
-  results = get_db_summary(pool)
+  global results
+  global update_summary
+  if update_summary:
+    results = get_db_summary(pool)
+    update_summary = False
   #close_db(pool)
   return render_template('summary.html', queries=results)
 
+
+
+@app.route("/fetch-data", methods=["POST"])
+def fetch_data():
+    # Scrape new data and update to db
+    fetch_new_data(pool)
+    
+    # After fetching new data, redirect to summary page (or reload current page)
+    return redirect(url_for("summary"))
+
+@app.route("/update-analysis", methods=["POST"])
+def update_analysis():
+    global update_summary
+    update_summary = 1
+    print("Will recalculate summary")
+    # Reload current page
+    return redirect(url_for("summary"))
+
+if __name__ == '__main__':
+  app.run(host='0.0.0.0', port=8080, debug=True)
+
+
+## Reference code
 '''
 ## did not work - runs at every context teardown(not at ctrl+c/exit).
 @app.teardown_appcontext
@@ -54,15 +56,4 @@ def deinit_db(exception):
     if pool:
         pool.close()
         print("Database connection pool closed.")
-'''
-
-@app.route("/fetch-data", methods=["POST"])
-def fetch_data():
-    # Call your database update function here
-    fetch_new_data(pool)  # Define this function to update your DB
-
-    # After fetching new data, redirect to summary page (or reload current page)
-    return redirect(url_for("summary"))
-
-if __name__ == '__main__':
-  app.run(host='0.0.0.0', port=8080, debug=True)
+'''  

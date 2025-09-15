@@ -9,11 +9,23 @@
            scraped-data to db
         b.  for each new record scraped (while scraping)
                 compare new record with entries in gradRecords_latest
-                - if reasonable sure that new record matches with the one in db
+                - if reasonably sure that new record matches with the one in db
                     - stop scraping
                     - we already have the remaining records from gradcafe
                       in the db.
         c. two records is an optimization - can be improved to a ring buffer/similar later.
-    3. Installed pgAdmin4 to run queries and see db entries etc on a GUI.
+    4. Installed pgAdmin4 to run queries and see db entries etc on a GUI.
+    5. Fetch new data - flow
+       Start scraping from page-1 on grad-cafe
+       for each record compare with gradrecord_latest
+       stop if a matching entry is found
+       push the newly got records into applicant_data_new.json
+       run llm/app-py on this file-> applicant_data_new_clean.json
+       add new entries to db
+       rename  to applicant_data_X.json
+       delete temp files
+
+    
+
 
 
