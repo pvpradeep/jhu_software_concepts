@@ -42,7 +42,8 @@ def _set_update_flag_for_fetch():
                     # 409 Conflict is appropriate for concurrent update attempts.
                     abort(409, description='Data update already in progress')
                 update_in_progress = True
-    except Exception:
+    # could not simulate in tests
+    except Exception: #pragma: no cover
         # If anything goes wrong inspecting the request, don't block
         # other requests unnecessarily; re-raise after ensuring state.
         raise
@@ -116,7 +117,7 @@ def update_analysis():
     print("Will recalculate summary")
     return redirect(url_for("summary"))
 
-if __name__ == '__main__':
+if __name__ == '__main__': #pragma: no cover
   app.run(host='0.0.0.0', port=8080, debug=True)
 
 

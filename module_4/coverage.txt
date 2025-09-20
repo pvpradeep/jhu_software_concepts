@@ -11,7 +11,7 @@ tests/test_buttons.py ...                                                [ 46%]
 tests/test_db_insert.py ..                                               [ 60%]
 tests/test_flask_page.py .....                                           [ 93%]
 tests/test_integration_end_to_end.py .
-ERROR: Coverage failure: total of 96 is less than fail-under=100
+ERROR: Coverage failure: total of 99 is less than fail-under=100
                                                                          [100%]
 
 =============================== warnings summary ===============================
@@ -25,13 +25,13 @@ _______________ coverage: platform darwin, python 3.13.7-final-0 _______________
 
 Name                Stmts   Miss  Cover   Missing
 -------------------------------------------------
-src/app.py             59      4    93%   43, 45-48, 120
+src/app.py             55      1    98%   43
 src/clean.py           56      1    98%   74
 src/config.py           9      0   100%
-src/load_data.py      156     10    94%   178-179, 195-199, 214, 263, 285-286
+src/load_data.py      143      0   100%
 src/query_data.py     125      0   100%
-src/scrape.py          93      6    94%   36, 50-53, 95
+src/scrape.py          89      2    98%   36, 96
 -------------------------------------------------
-TOTAL                 498     21    96%
-FAIL Required test coverage of 100% not reached. Total coverage: 95.78%
-======================== 15 passed, 1 warning in 17.04s ========================
+TOTAL                 477      4    99%
+FAIL Required test coverage of 100% not reached. Total coverage: 99.16%
+======================== 15 passed, 1 warning in 17.17s ========================

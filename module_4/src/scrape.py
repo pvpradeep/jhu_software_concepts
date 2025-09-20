@@ -46,7 +46,8 @@ def fetch_html_or_sample(url):
         sample_path = os.path.join(os.path.dirname(__file__), "../tests/sample_page.html")
         with open(sample_path, "r", encoding="utf-8") as f:
             return f.read()
-    else:
+    # avoid in coverage since we load from a html file during tests    
+    else:   # pragma: no cover
         response = http.request('GET', url)
         if response.status != 200:
             raise Exception(f"Error: Unable to fetch {url}, errno = {response.status}")

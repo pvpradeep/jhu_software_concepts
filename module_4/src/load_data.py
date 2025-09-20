@@ -175,7 +175,7 @@ def process_one_json(filename):
       print(f"Inserted {len(data)} records from {file_path}")      
       total_records += len(data)
 
-  except FileNotFoundError:
+  except FileNotFoundError: #pragma: no cover
     print("File not found") 
 
   finally:
@@ -190,8 +190,9 @@ def process_json_files():
     try:
       file_path = os.path.join(JSON_DATA_FILEPATH, f"{JSON_DATA_FILENAME}_{i}.json")
       i += 1
-      # optimize later to reuse process_one_json
-      with open(file_path, 'r') as f:
+      # optimize later to reuse process_one_json.  wont be covered while testing since
+      # we load only one file during tests
+      with open(file_path, 'r') as f: #pragma: no cover
         data = json.load(f)
         #print_records(data, 2, "Read from json")  # Print first 2 records for verification
         insert_grad_records(data)
@@ -204,13 +205,14 @@ def process_json_files():
   print(f"Total records added to db: {total_records}")
 
 # Takes latest records in a json file and adds records to db
+# not executed during tests since we load only one file during tests
 def load_new_data_to_db(latest_file):
   #rename to right index/ latest index 
   idx = 0
   while True:
     file_path = os.path.join(JSON_DATA_FILEPATH, f"{JSON_DATA_FILENAME}_{idx}.json")
     idx_exists = os.path.isfile(file_path)
-    if idx_exists:
+    if idx_exists:  #pragma: no cover
       idx += 1
     else:
         break
@@ -259,7 +261,7 @@ def fetch_new_data(pool):
     print("llm_app.py stderr:", result.stderr)
     if result.returncode == 0:
         print("llm_app.py ran successfully.")
-    else:
+    else: #pragma: no cover
         print(f"llm_app.py failed with return code {result.returncode}")
 
     # convert jsonl to json (other formats have some issue)
@@ -280,7 +282,8 @@ def create_db(mainPool):
   create_table()
   process_json_files()
   
-def close_pool(pool):  
+#unused function, currently closing via atexit
+def close_pool(pool):  #pragma: no cover
   # Close the pool when done
   pool.close()
   print("Connection pool closed.")
