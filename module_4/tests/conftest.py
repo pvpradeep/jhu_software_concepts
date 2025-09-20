@@ -25,3 +25,12 @@ def cleanup_data_dir():
                 os.remove(f)
             except Exception as e:
                 print(f"Could not delete {f}: {e}")
+
+# Register custom markers for pytest
+pytestmark = [
+    pytest.mark.web,
+    pytest.mark.buttons,
+    pytest.mark.analysis,
+    pytest.mark.db,
+    pytest.mark.integration
+]
