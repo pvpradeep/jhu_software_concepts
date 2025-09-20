@@ -3,7 +3,7 @@ import urllib3
 from bs4 import BeautifulSoup
 import json
 import time
-from clean import clean_data, print_record
+from clean import clean_data
 import sys
 
 

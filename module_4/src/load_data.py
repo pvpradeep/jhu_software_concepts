@@ -235,7 +235,7 @@ def delete_new_files(folder_path):
 # and update db with new records.
 def fetch_new_data(pool):
     print("Starting fetch...")    
-    scrape_new(1, 400) # start from page 1 and stop when it hits a known entry in db
+    scrape_new(1, 20) # start from page 1 and stop when it hits a known entry in db
     print("Running llm")
     # New data is in src/data/applicant_data_new.json
     new_json = os.path.join(JSON_DATA_FILEPATH, 'applicant_data_new.json')

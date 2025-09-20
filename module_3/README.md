@@ -25,7 +25,37 @@
        rename  to applicant_data_X.json
        delete temp files
 
-    
+# directory structure
+../module_3 % tree -L 2
+.
+├── __pycache__
+├── app.py
+├── clean.py
+├── config.py
+├── data
+│   ├── applicant_data_0.json
+│   ├── applicant_data_1.json
+├── llm_hosting
+│   ├── canon_programs.txt
+│   ├── canon_universities.txt
+│   ├── llm_app.py
+│   ├── models
+│   ├── out.json
+│   ├── README.md
+│   ├── requirements.txt
+│   └── runLogs.txt
+├── load_data.py
+├── models
+│   └── tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf
+├── query_data.py
+├── README.md
+├── requirements.txt
+├── scrape.py
+├── templates
+│   ├── base.html
+│   ├── create.html
+│   └── summary.html
+└── venv    
 
 
 

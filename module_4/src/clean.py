@@ -1,7 +1,7 @@
 
 urlBase = "https://www.thegradcafe.com"
 
-def _print_record(record, indent=0):
+def _print_record(record, indent=0):  # pragma: no cover
     indent_str = " " * indent
     for key, value in record.items():
         # If value is a dictionary, print recursively with extra indent
@@ -178,12 +178,3 @@ def clean_data(rows, i):
             #print("No detail URL found for row:", summary_data)
         
         """
-
-def open_data(filename):
-    # Open and read records from a JSON file
-    records = []
-    with open(filename, 'r', encoding='utf-8') as f:
-        for line in f:
-            record = json.loads(line)
-            records.append(record)
-    return records

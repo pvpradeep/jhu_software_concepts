@@ -36,10 +36,13 @@ def _is_existing_record(record, latest_records_in_db):
     return False
 
 
-
 def fetch_html_or_sample(url):
+    # Custom variable to control use of sample HTML for testing
+    USE_SAMPLE_HTML = os.environ.get("USE_SAMPLE_HTML") == "1"
+    print(f"USE_SAMPLE_HTML = {USE_SAMPLE_HTML}")
+
     # If running under pytest, use the local sample HTML file
-    if "PYTEST_CURRENT_TEST" in os.environ:
+    if USE_SAMPLE_HTML:
         sample_path = os.path.join(os.path.dirname(__file__), "../tests/sample_page.html")
         with open(sample_path, "r", encoding="utf-8") as f:
             return f.read()
@@ -108,9 +111,11 @@ def scrape_new(nPage=1, max_records=400):
     start_time = time.time()
     print(f"Starting from page {nPage}")
     nRecords = 0
-    latest_records_in_db = get_grad_records_latest()
-    print(f"Latest in db, stop at \n: {latest_records_in_db}")
-    while nRecords < max_records:
+    
+    while nRecords < max_records:        
+        latest_records_in_db = get_grad_records_latest()
+        print(f"Latest in db, stop at \n: {latest_records_in_db}")
+
         found_old_record = _scrape_one_page(nPage, latest_records_in_db)
         nPage += 1
         nRecords += len(records)       

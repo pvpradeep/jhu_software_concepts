@@ -3,7 +3,7 @@ import psycopg
 import psycopg_pool
 
 
-def print_records(records, x = 3, header = None):
+def print_records(records, x = 3, header = None): # pragma: no cover
   print("" + "="*40)
   print(f"Printing {header} ")
   print("" + "="*40)
@@ -45,6 +45,7 @@ def getQ2(cur):
     cur.execute("SELECT COUNT(*) FROM gradrecords WHERE us_or_international IS NOT NULL")
     total_count = cur.fetchone()[0]
     percentage = (international_count / total_count * 100) if total_count > 0 else 0
+    percentage = round(percentage, 2) if percentage is not None else 0.0
     return f"Percentage of international students: {percentage:.2f}%"
 
 def getQ3(cur):
@@ -73,6 +74,7 @@ def getQ4(cur):
       WHERE us_or_international = 'American' AND term = 'Fall 2025' AND gpa != 0
     """)
     avg_gpa_american_fall_2025 = cur.fetchone()[0]
+    avg_gpa_american_fall_2025 = round(avg_gpa_american_fall_2025, 2) if avg_gpa_american_fall_2025 is not None else 0.0
     return f"Average GPA of American students in Fall 2025: {avg_gpa_american_fall_2025:.2f}"
 
 def getQ5(cur):
@@ -81,7 +83,8 @@ def getQ5(cur):
     cur.execute("SELECT COUNT(*) FROM gradrecords WHERE term = 'Fall 2025' AND status ILIKE '%accepted%'")
     accepted_fall_2025_count = cur.fetchone()[0]
     acceptance_percentage_fall_2025 = (accepted_fall_2025_count / fall_2025_count * 100) if fall_2025_count > 0 else 0
-    return f"Percentage of Acceptances for Fall 2025: {acceptance_percentage_fall_2025:.2f}%"
+    acp = round(acceptance_percentage_fall_2025, 2) if acceptance_percentage_fall_2025 is not None else 0.0
+    return f"Percentage of Acceptances for Fall 2025: {acp:.2f}%"
 
 def getQ6(cur):
     cur.execute("""
@@ -90,7 +93,8 @@ def getQ6(cur):
       WHERE term = 'Fall 2025' AND status ILIKE '%accepted%' AND gpa != 0
     """)
     avg_gpa_accepted_fall_2025 = cur.fetchone()[0]
-    return f"Average GPA of Acceptances for Fall 2025: {avg_gpa_accepted_fall_2025:.2f}"
+    avg = round(avg_gpa_accepted_fall_2025, 2) if avg_gpa_accepted_fall_2025 is not None else 0.0
+    return f"Average GPA of Acceptances for Fall 2025: {avg:.2f}"
 
 def getQ7(cur):
     cur.execute("""
@@ -99,7 +103,8 @@ def getQ7(cur):
       WHERE program ILIKE '%computer science%' AND degree ILIKE '%master%'
     """)
     jhu_cs_masters_count = cur.fetchone()[0]
-    return f"Total entries for JHU(to-do) Computer Science Masters: {jhu_cs_masters_count}"
+    csm = round(jhu_cs_masters_count, 2) if jhu_cs_masters_count is not None else 0.0
+    return f"Total entries for JHU(to-do) Computer Science Masters: {csm}"
 
 def getQ8(cur):
     cur.execute("""
@@ -130,6 +135,11 @@ def getQ9(cur):
 
     cur.execute(f"SELECT AVG(gre_aw) FROM gradrecords WHERE gre_aw !=0 AND gre_aw <= {max_gre_aw}")
     avg_gre_aw = cur.fetchone()[0]
+    avg_gpa = round(avg_gpa, 2) if avg_gpa is not None else 0.0
+    avg_gre = round(avg_gre, 2) if avg_gre is not None else 0.0
+    avg_gre_v = round(avg_gre_v, 2) if avg_gre_v is not None else 0.0
+    avg_gre_aw = round(avg_gre_aw, 2) if avg_gre_aw is not None else 0.0
+
     return (f"Average GPA (no outliers): {avg_gpa:>6.2f},"
             f"     Average GRE (no outliers): {avg_gre:>6.2f},"
             f"     Average GRE V (no outliers): {avg_gre_v:>6.2f},"
@@ -165,6 +175,11 @@ def getQ10(cur):
     gre_aw_valid_count = cur.fetchone()[0]
     greaw_outl_percentage = (greaw_outliers / gre_aw_valid_count * 100) if gre_aw_valid_count > 0 else 0
 
+    gpa_outl_percentage = round(gpa_outl_percentage, 2) if gpa_outl_percentage is not None else 0.0
+    gre_outl_percentage = round(gre_outl_percentage, 2) if gre_outl_percentage is not None else 0.0
+    grev_outl_percentage = round(grev_outl_percentage, 2) if grev_outl_percentage is not None else 0.0
+    greaw_outl_percentage = round(greaw_outl_percentage, 2) if greaw_outl_percentage is not None else 0.0
+
     return (f"\nGPA outliers: {gpa_outliers}, Percentage of GPA outliers: {gpa_outl_percentage:>6.2f}%\n"
             f"GRE outliers: {gre_outliers}, Percentage of GRE outliers: {gre_outl_percentage:>6.2f}%\n"
             f"GRE V outliers: {grev_outliers}, Percentage of GRE V outliers: {grev_outl_percentage:>6.2f}%\n"
@@ -194,7 +209,7 @@ def get_db_summary(pool):
 ### Helper / Print functions for debugging
 
 ## retain this function for now - to check on terminal
-def print_query_results(pool):
+def print_query_results(pool):  # pragma: no cover
   with pool.connection() as conn:
     with conn.cursor() as cur:
       print("\n" + "="*60)
@@ -347,5 +362,5 @@ def print_query_results(pool):
       greaw_outliers = cur.fetchone()[0]
       outl_percentage = (greaw_outliers / gre_aw_valid_count * 100) if gre_aw_valid_count > 0 else 0
       print(f".   GRE AW outliers: {greaw_outliers}, Percentage of GPA outliers: {outl_percentage:.2f}%")
-
+      return
 
