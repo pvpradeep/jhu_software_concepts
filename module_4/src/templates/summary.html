@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{% block title %} Database Analysis {% endblock %}</h1>
+  <div class="fetch-button-container">
+    <form action="{{ url_for('fetch_data') }}" method="post" style="display: inline;">
+      <button type="submit" class="fetch-button" data-tooltip="Fetch new data from source">
+        Pull Data
+      </button>
+    </form>
+    <form action="{{ url_for('update_analysis') }}" method="post" style="display: inline;">
+      <button type="submit" class="fetch-button" data-tooltip="Reload the summary page with latest data">
+        Update Summary
+      </button>
+    </form>
+  </div>
+  {% for query in queries %}
+    <div class='query query{{ loop.index }}'>
+      <p class="query-text query{{ loop.index }}">{{ loop.index }}. {{ query.0 }}</p>
+      <p class="answer-text ans{{ loop.index }}"><strong>Ans.</strong> {{ query.1 | replace('\n', '<br>') | safe }}</p>
+    </div>
+  {% endfor %}
+{% endblock %}
+
+
+      

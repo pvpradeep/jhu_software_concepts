@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset = "UTF-8" />  
+  <style>
+    nav a{
+      color: #607d8b;
+      font-size: em;
+      margin-left: 50px;
+      text-decoration: none;
+    }
+
+    .course{
+      padding: 20px;
+      margin: 10px;
+      background-color: #f7f4f4;
+    }
+    
+  </style>
+</head>
+<body>
+  <nav>
+  </nav>
+  <hr>
+  <div class= "content">
+    {% block content %} {% endblock %}
+  </div>
+</body>
+</html>
+
+
+<style>
+  .query {
+    border: 2px solid #65655f;      /* green border */
+    background-color: #e3f3e3;      /* light green background */
+    padding: 10px 15px;
+    margin-bottom: 20px;            /* space between blocks */
+    border-radius: 8px;
+  }
+  .query p.query-text {
+    color: #232339;                /* dark green text for question */
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+  .query p.answer-text {
+    padding: 8px 12px;
+    border-radius: 5px;
+    white-space: pre-wrap;          /* preserves formatting like newlines */
+  }
+
+  .fetch-button-container {
+    position: absolute;      /* position relative to nearest positioned ancestor */
+    top: 15px;               /* distance from top */
+    right: 15px;             /* distance from right */
+  }
+
+  fetch-button {
+    background-color: #ccc;  /* light gray background */
+    color: #333;             /* dark gray text */
+    border: 1px solid #999;  /* gray border */
+    padding: 18px 32px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+    filter: grayscale(100%); /* full grayscale */
+    transition: filter 0.3s ease;
+    font-size: 1.3rem;       /* increased font size */
+    margin-right: 10px;      /* space between buttons */
+    position: relative;      /* for tooltip positioning */
+}
+
+.fetch-button:hover {
+    filter: none;            /* remove grayscale on hover */
+    background-color: #bbb;
+}
+
+/* Tooltip container - position below button */
+.fetch-button[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 110%;             /* place tooltip below the button */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #555;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    z-index: 10;
+    opacity: 0.9;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+/* Tooltip arrow - below tooltip */
+.fetch-button[data-tooltip]:hover::before {
+    content: "";
+    position: absolute;
+    top: 100%;             /* arrow just above tooltip */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: transparent transparent #555 transparent;
+    z-index: 10;
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+  
+</style>
