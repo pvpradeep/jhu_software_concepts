@@ -45,15 +45,18 @@ jobs:
         pip install pytest pytest-cov
         pip install -e .
 
-    - name: Create or reset test database
+    - name: Setup database and user
       run: |
         PGPASSWORD='' psql -h localhost -U postgres -p 5433 -c 'DROP DATABASE IF EXISTS jhudb_gradrec;'
-        PGPASSWORD='' psql -h localhost -U postgres -p 5433 -c 'CREATE DATABASE jhudb_gradrec;'
+        PGPASSWORD='' psql -h localhost -U postgres -p 5433 -c 'DROP USER IF EXISTS jhuuser;'
+        PGPASSWORD='' psql -h localhost -U postgres -p 5433 -c 'CREATE USER jhuuser WITH LOGIN CREATEDB;'
+        PGPASSWORD='' psql -h localhost -U postgres -p 5433 -c 'CREATE DATABASE jhudb_gradrec OWNER jhuuser;'
+        PGPASSWORD='' psql -h localhost -U postgres -p 5433 -c 'GRANT ALL PRIVILEGES ON DATABASE jhudb_gradrec TO jhuuser;'
 
     - name: Run tests with pytest
       env:
         TEST_ENV: "True"
-        DATABASE_URL: "postgresql://postgres@localhost:5433/jhudb_gradrec"
+        DATABASE_URL: "postgresql://jhuuser@localhost:5433/jhudb_gradrec"
       run: |
         pytest --cov=src/ --cov-report=xml -v
 
