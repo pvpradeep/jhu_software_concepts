@@ -1,0 +1,111 @@
+
+
+venv) ../module_3 % python app.py
+Existing tables dropped.
+Inserted 50000 records from ./data/applicant_data_0.json
+Total records added to db: 50000
+Total records in gradrecords table: 50000
+Total records in gradrecords_latest table: 2
+========================================
+Printing records in gradrecords_latest
+========================================
+Record 1: (1, 'Civil And Environmental Engineering, Wayne State University', 'professor took interview and then offer letter come', datetime.date(2025, 9, 6), 'https://www.thegradcafe.com/r
+esult/986420', 'Accepted on 28 Aug', 'Spring 2026', 'International', 3.62, 310.0, 150.0, 3.5, 'PhD', None, None)
+Record 2: (2, 'RonaldAnoms, Microsoft', '', datetime.date(2025, 9, 6), 'https://www.thegradcafe.com/result/986419', 'Wait listed on 3 Jan', 'Fall 2026', 'International', 0.0, 0.0, 485.0, 11
+.0, 'PsyD', None, None)
+========================================
+
+============================================================
+Database Summary and Analysis
+============================================================
+1. Total entries for Fall 2025: 6631
+2. Percentage of international students: 59.25%
+3. Average GPA: 3.77, Average GRE: 176.88, Average GRE V: 165.48, Average GRE AW: 5.50
+4. Average GPA of American students in Fall 2025: 3.77
+5. Percentage of Acceptances for Fall 2025: 35.88%
+6. Average GPA of Acceptances for Fall 2025: 3.76
+7. Total entries for JHU Computer Science Masters: 0
+8. Total acceptances for Georgetown Computer Science PhD in Fall 2025: 0
+9. Average GPA (no outliers): 3.72, Average GRE (no outliers): 168.47, Average GRE V (no outliers): 158.21, Average GRE AW (no outliers): 4.26
+10. GPA outliers: 239, Percentage of GPA outliers: 1.21%
+    GRE outliers: 126, Percentage of GPA outliers: 1.51%
+    GRE V outliers: 133, Percentage of GPA outliers: 1.70%
+.   GRE AW outliers: 93, Percentage of GPA outliers: 1.25%
+Database initialization and summary complete.
+ * Serving Flask app 'app'
+ * Debug mode: on
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://192.168.1.30:8080
+Press CTRL+C to quit
+
+## Fetch new data
+
+127.0.0.1 - - [14/Sep/2025 16:45:50] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [14/Sep/2025 16:45:50] "GET /favicon.ico HTTP/1.1" 404 -
+
+
+
+Starting fetch...
+Starting from page 1
+Latest in db, stop at
+: [{'id': 1, 'program': 'Civil And Environmental Engineering, Wayne State University', 'comments': 'professor took interview and then offer letter come', 'date_added': datetime.date(2025, 9, 6), 'url': 'https://www.thegradcafe.com/result/986420', 'status': 'Accepted on 28 Aug', 'term': 'Spring 2026', 'us_or_international': 'International', 'gpa': 3.62, 'gre': 310.0, 'gre_v': 150.0, 'gre_aw': 3.5, 'degree': 'PhD', 'llm_generated_program': None, 'llm_generated_university': None}, {'id': 2, 'program': 'RonaldAnoms, Microsoft', 'comments': '', 'date_added': datetime.date(2025, 9, 6), 'url': 'https://www.thegradcafe.com/result/986419', 'status': 'Wait listed on 3 Jan', 'term': 'Fall 2026', 'us_or_international': 'International', 'gpa': 0.0, 'gre': 0.0, 'gre_v': 485.0, 'gre_aw': 11.0, 'degree': 'PsyD', 'llm_generated_program': None, 'llm_generated_university': None}]
+Scraping  https://www.thegradcafe.com/survey/index.php?page=1
+Got 20 records to applicant_data_new.json, total records: 20, nPage: 2
+Saved 20 records to ./data/applicant_data_new.json
+Scraping  https://www.thegradcafe.com/survey/index.php?page=2
+Found record in DB(stop scraping) : https://www.thegradcafe.com/result/986420
+
+Found existing record, break: {'program': 'Civil And Environmental Engineering, Wayne State University', 'Degree': 'PhD', 'date_added': 'September 06, 2025', 'status': 'Accepted on 28 Aug', 'url': 'https://www.thegradcafe.com/result/986420', 'term': 'Spring 2026', 'US/International': 'International', 'GRE': '310', 'GRE V': '150', 'GRE AW': '3.5', 'GPA': '3.62', 'comments': 'professor took interview and then offer letter come'}
+Got 0 records to applicant_data_new.json, total records: 20, nPage: 3
+Scraping completed in 2.9075357913970947 seconds.
+Running llm
+
+./data/applicant_data_new_clean.json renamed to ./data/applicant_data_1.json successfully.
+Inserted 20 records from ./data/applicant_data_1.json
+Total records added to db: 20
+Deleted: ./data/applicant_data_new.json.jsonl
+Deleted: ./data/applicant_data_new.json
+127.0.0.1 - - [14/Sep/2025 16:50:24] "POST /fetch-data HTTP/1.1" 302 -
+127.0.0.1 - - [14/Sep/2025 16:50:24] "GET / HTTP/1.1" 200 -
+
+
+Will recalculate summary
+127.0.0.1 - - [14/Sep/2025 16:52:53] "POST /update-analysis HTTP/1.1" 302 -
+127.0.0.1 - - [14/Sep/2025 16:52:54] "GET / HTTP/1.1" 200 -
+ * Detected change in '/Users/prads/Desktop/MsAI/Python/code/jhu_software_concepts/module_3/query_data.py', reloading
+ * Restarting with stat
+Existing tables dropped.
+Inserted 50000 records from ./data/applicant_data_0.json
+Inserted 20 records from ./data/applicant_data_1.json
+Total records added to db: 50020
+Total records in gradrecords table: 50020
+Total records in gradrecords_latest table: 2
+========================================
+Printing records in gradrecords_latest
+========================================
+
+Record 1: (50003, 'Creative Writing Nonfiction, Warren Wilson College', '', datetime.date(2025, 9, 14), 'https://www.thegradcafe.com/result/986441', 'Accepted on 14 Sep', 'Spring 2026', 'American', 3.87, 0.0, 0.0, 0.0, 'MFA', 'Creative Writing Nonfiction', 'Warren Wilson College')
+Record 2: (50004, 'Jamesbem, University of Toledo', '', datetime.date(2025, 9, 14), 'https://www.thegradcafe.com/result/986440', 'Interview on 4 Jul', 'Fall 2026', 'International', 0.0, 0.0, 199.0, 48.0, 'JD', 'Jamesbem', 'University of Toledo')
+========================================
+
+============================================================
+Database Summary and Analysis
+============================================================
+1. Total entries for Fall 2025: 6639
+2. Percentage of international students: 59.25%
+3. Average GPA: 3.77, Average GRE: 176.88, Average GRE V: 165.48, Average GRE AW: 5.51
+4. Average GPA of American students in Fall 2025: 3.77
+5. Percentage of Acceptances for Fall 2025: 35.92%
+6. Average GPA of Acceptances for Fall 2025: 3.76
+7. Total entries for JHU Computer Science Masters: 2
+8. Total acceptances for Georgetown Computer Science PhD in Fall 2025: 0
+9. Average GPA (no outliers): 3.72, Average GRE (no outliers): 168.47, Average GRE V (no outliers): 158.21, Average GRE AW (no outliers): 4.26
+10. GPA outliers: 239, Percentage of GPA outliers: 1.21%
+    GRE outliers: 126, Percentage of GPA outliers: 1.51%
+    GRE V outliers: 134, Percentage of GPA outliers: 1.71%
+.   GRE AW outliers: 94, Percentage of GPA outliers: 1.26%
+Database initialization and summary complete.
+ * Debugger is active!
+ * Debugger PIN: 769-418-991
