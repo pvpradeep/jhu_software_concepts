@@ -8,11 +8,10 @@ import subprocess
 import glob
 
 from datetime import datetime
-from query_data import print_load_summary ,print_query_results
-
-from config import DSN, JSON_DATA_FILEPATH, JSON_DATA_FILENAME
-from query_data import print_records
-from scrape import scrape_new
+from src.query_data import print_load_summary, print_query_results
+from src.config import DSN, JSON_DATA_FILEPATH, JSON_DATA_FILENAME
+from src.query_data import print_records
+from src.scrape import scrape_new
 
 
 MAX_MARKERS = 2
@@ -71,25 +70,76 @@ def reset_db(pool):
       conn.commit()
       print("Existing tables dropped.")
 
-'''
-      Database Schema
+"""
+Database Schema
+=============
 
-p_id                integer   Unique iden5fier
-program             text      University and Department
-comments            text      Comments
-date_added          date      Date Added
-url                 text      Link to Post on Grad Café
-status              text      Admission Status
-term                text      Start Term
-us_or_international text      Student na5onality
-gpa                 float     Student GPA
-gre                 float     Student GRE Quant
-gre_v               float     Student GRE Verbal
-gre_aw              float     Student Average Wri5ng
-degree              float     Student Program Degree Type
-llm_generated_progr text      LLM Generated Department / Programam
-llm_generated_university text LLM Generated University
-'''
+The database uses three tables with identical schema through inheritance:
+    - grad_records_common: Base table (parent)
+    - gradrecords: Main storage table
+    - gradrecords_latest: Recent records table
+
+Schema Definition
+---------------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 15 65
+
+   * - Column Name
+     - Type
+     - Description
+   * - p_id
+     - integer
+     - Unique identifier, auto-incrementing primary key
+   * - program
+     - text
+     - University and Department name
+   * - comments
+     - text
+     - User-provided comments about application/decision
+   * - date_added
+     - date
+     - Date when record was added to GradCafe
+   * - url
+     - text
+     - Link to original post on GradCafe
+   * - status
+     - text
+     - Admission decision status
+   * - term
+     - text
+     - Academic term of admission
+   * - us_or_international
+     - text
+     - Student nationality (US/International)
+   * - gpa
+     - float
+     - Student's Grade Point Average
+   * - gre
+     - float
+     - GRE Quantitative score
+   * - gre_v
+     - float
+     - GRE Verbal score
+   * - gre_aw
+     - float
+     - GRE Analytical Writing score
+   * - degree
+     - text
+     - Type of degree program (MS, PhD, etc.)
+   * - llm_generated_program
+     - text
+     - Program name extracted by LLM
+   * - llm_generated_university
+     - text
+     - University name extracted by LLM
+
+Notes:
+    - All tables inherit from grad_records_common
+    - gradrecords stores the complete dataset
+    - gradrecords_latest keeps only recent entries for comparison
+"""
 create_common_sql = """
 CREATE TABLE IF NOT EXISTS grad_records_common (
     id SERIAL PRIMARY KEY,
@@ -113,36 +163,57 @@ create_grad_records_sql = "CREATE TABLE IF NOT EXISTS gradrecords (LIKE grad_rec
 create_grad_records_latest_sql = "CREATE TABLE IF NOT EXISTS gradrecords_latest (LIKE grad_records_common INCLUDING ALL);"
 
 def create_table():
-  """A function to create tables in the database"""
-  with pool.connection() as conn:
-    with conn.cursor() as cur:
-      #Dummy, required for table inheritance
-      cur.execute(create_common_sql)
-      #Actual records table
-      cur.execute(create_grad_records_sql)
-      #Newest entries records table
-      cur.execute(create_grad_records_latest_sql)
+    """
+    Create the database schema for storing grad records.
 
-      conn.commit()
+    Creates three tables in the database:
+    - grad_records_common: Base table with common schema (parent table)
+    - gradrecords: Main table inheriting from common (stores all records)
+    - gradrecords_latest: Table for most recent entries (also inherits from common)
+
+    The function uses table inheritance to maintain schema consistency across tables.
+    All tables share the same structure defined in create_common_sql.
+
+    Global variables:
+        - pool: Database connection pool used for executing SQL
+    """
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            #Dummy, required for table inheritance
+            cur.execute(create_common_sql)
+            #Actual records table
+            cur.execute(create_grad_records_sql)
+            #Newest entries records table
+            cur.execute(create_grad_records_latest_sql)
+
+            conn.commit()
 
 
-#Delete current entries in gradrecords_latest and insert new ones
 def insert_grad_records_latest(json_data):
-  with pool.connection() as conn:
-    with conn.cursor() as cur:
-      cur.execute('SELECT * FROM gradrecords_latest')
-      #records = cur.fetchall()
-      #print_records(records, 2, "latest to be dropped")  # Adjust x as needed to print more/fewer records
-      #print(f"Total records {len(records)} to be dropped in gradrecords_latest")
-      # Delete all existing entries
-      cur.execute('DELETE FROM gradrecords_latest')
+    """
+    Update the gradrecords_latest table with the most recent entries.
+    
+    This function maintains a small set of the most recent records for quick
+    comparison during scraping. It first clears the existing entries, then
+    inserts up to MAX_MARKERS entries from the new data.
+    
+    :param json_data: List of grad record entries to process
+    :type json_data: list[dict]
+    
+    Global variables:
+        - pool: Database connection pool
+        - MAX_MARKERS: Maximum number of recent records to keep
+    """
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute('SELECT * FROM gradrecords_latest')
+            # Delete all existing entries
+            cur.execute('DELETE FROM gradrecords_latest')
 
-      # Insert new entries - upto MAX_MARKERS
-      for entry in json_data[:MAX_MARKERS]:
-          insert_record_from_json(cur, "gradrecords_latest", entry)
-          #cur.execute('INSERT INTO gradrecords_latest (data) VALUES (%s)', [json.dumps(entry)])
-          #print(f"Inserted into latest: {entry}")
-      conn.commit()
+            # Insert new entries - upto MAX_MARKERS
+            for entry in json_data[:MAX_MARKERS]:
+                insert_record_from_json(cur, "gradrecords_latest", entry)
+            conn.commit()
 
       #cur.execute('SELECT * FROM gradrecords_latest')
       #records = cur.fetchall()
@@ -152,76 +223,135 @@ def insert_grad_records_latest(json_data):
 
 
 def insert_grad_records(json_data):
-  # top MAX_MARKERS entries also go to gradrecords_latest table
-  insert_grad_records_latest(json_data)
+    """
+    Insert grad records into both the main and latest tables.
+    
+    This function coordinates the insertion of records into both the main gradrecords
+    table and the gradrecords_latest tracking table. It ensures the most recent
+    entries are available for comparison while maintaining the complete dataset.
+    
+    :param json_data: List of grad record entries to insert
+    :type json_data: list[dict]
+    
+    Global variables:
+        - pool: Database connection pool
+        - MAX_MARKERS: Used indirectly via insert_grad_records_latest
+    """
+    # top MAX_MARKERS entries also go to gradrecords_latest table
+    insert_grad_records_latest(json_data)
 
-  with pool.connection() as conn:
-    with conn.cursor() as cur:
-      for entry in json_data:
-          insert_record_from_json(cur, "gradrecords", entry)
-          #cur.execute('INSERT INTO gradrecords (data) VALUES (%s)', [json.dumps(entry)])
-      conn.commit()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            for entry in json_data:
+                insert_record_from_json(cur, "gradrecords", entry)
+            conn.commit()
 
 
 
 def process_one_json(filename):
-  total_records = 0
-  try:
-    file_path = os.path.join(JSON_DATA_FILEPATH, f"{filename}")
-    with open(file_path, 'r') as f:
-      data = json.load(f)
-      #print_records(data, 2, "Read from json")  # Print first 2 records for verification
-      insert_grad_records(data)
-      print(f"Inserted {len(data)} records from {file_path}")      
-      total_records += len(data)
+    """
+    Process a single JSON file and insert its records into the database.
+    
+    Reads the specified file from the JSON_DATA_FILEPATH directory,
+    processes its contents, and inserts the records into the database.
+    Handles file not found errors gracefully.
+    
+    :param filename: Name of the JSON file to process
+    :type filename: str
+    :return: Total number of records processed
+    :rtype: int
+    
+    Global variables:
+        - JSON_DATA_FILEPATH: Directory containing the JSON files
+    """
+    total_records = 0
+    try:
+        file_path = os.path.join(JSON_DATA_FILEPATH, f"{filename}")
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+            insert_grad_records(data)
+            print(f"Inserted {len(data)} records from {file_path}")      
+            total_records += len(data)
 
-  except FileNotFoundError: #pragma: no cover
-    print("File not found") 
+    except FileNotFoundError: #pragma: no cover
+        print("File not found") 
 
-  finally:
-    print(f"Total records added to db: {total_records}")
+    finally:
+        print(f"Total records added to db: {total_records}")
+        return total_records
 
 
 # Read all matching json data file(s) and insert into the db
 def process_json_files():
-  total_records = 0
-  i = 0
-  while True:
-    try:
-      file_path = os.path.join(JSON_DATA_FILEPATH, f"{JSON_DATA_FILENAME}_{i}.json")
-      i += 1
-      # optimize later to reuse process_one_json.  wont be covered while testing since
-      # we load only one file during tests
-      with open(file_path, 'r') as f: #pragma: no cover
-        data = json.load(f)
-        #print_records(data, 2, "Read from json")  # Print first 2 records for verification
-        insert_grad_records(data)
-        print(f"Inserted {len(data)} records from {file_path}")      
-        total_records += len(data)
+    """
+    Process all JSON data files in sequence and load them into the database.
+    
+    Searches for files matching the pattern JSON_DATA_FILENAME_{i}.json where i
+    starts from 0 and increments until no more files are found. Each file's
+    contents are processed and inserted into the database.
+    
+    :return: Total number of records processed across all files
+    :rtype: int
+    
+    Global variables:
+        - JSON_DATA_FILEPATH: Base directory for JSON files
+        - JSON_DATA_FILENAME: Base filename pattern for JSON files
+    """
+    total_records = 0
+    i = 0
+    while True:
+        try:
+            file_path = os.path.join(JSON_DATA_FILEPATH, f"{JSON_DATA_FILENAME}_{i}.json")
+            i += 1
+            # optimize later to reuse process_one_json.  wont be covered while testing since
+            # we load only one file during tests
+            with open(file_path, 'r') as f: #pragma: no cover
+                data = json.load(f)
+                insert_grad_records(data)
+                print(f"Inserted {len(data)} records from {file_path}")      
+                total_records += len(data)
 
-    except FileNotFoundError:
-      break
+        except FileNotFoundError:
+            break
 
-  print(f"Total records added to db: {total_records}")
+    print(f"Total records added to db: {total_records}")
+    return total_records
 
 # Takes latest records in a json file and adds records to db
 # not executed during tests since we load only one file during tests
 def load_new_data_to_db(latest_file):
-  #rename to right index/ latest index 
-  idx = 0
-  while True:
-    file_path = os.path.join(JSON_DATA_FILEPATH, f"{JSON_DATA_FILENAME}_{idx}.json")
-    idx_exists = os.path.isfile(file_path)
-    if idx_exists:  #pragma: no cover
-      idx += 1
-    else:
-        break
-   # file_path already points to new name, should try, except errors
-  os.rename(latest_file, file_path)
-  print(f"{latest_file} renamed to {file_path} successfully.")
+    """
+    Process newly scraped data and add it to the database.
+    
+    This function handles the integration of new data files by:
+    1. Finding the next available index in the sequence of data files
+    2. Renaming the temporary file to match the sequence
+    3. Processing the renamed file's contents into the database
+    
+    :param latest_file: Path to the temporary file containing new data
+    :type latest_file: str
+    :return: Number of records processed from the file
+    :rtype: int
+    
+    Global variables:
+        - JSON_DATA_FILEPATH: Directory for data files
+        - JSON_DATA_FILENAME: Base name for sequenced files
+    """
+    #rename to right index/ latest index 
+    idx = 0
+    while True:
+        file_path = os.path.join(JSON_DATA_FILEPATH, f"{JSON_DATA_FILENAME}_{idx}.json")
+        idx_exists = os.path.isfile(file_path)
+        if idx_exists:  #pragma: no cover
+            idx += 1
+        else:
+            break
+    # file_path already points to new name, should try, except errors
+    os.rename(latest_file, file_path)
+    print(f"{latest_file} renamed to {file_path} successfully.")
 
-  # Add this to db
-  process_one_json(f"{JSON_DATA_FILENAME}_{idx}.json")
+    # Add this to db
+    return process_one_json(f"{JSON_DATA_FILENAME}_{idx}.json")
 
 # Cleanup temp files after a new fetch
 def delete_new_files(folder_path):
@@ -236,6 +366,23 @@ def delete_new_files(folder_path):
 # Entry function to scrape new data from gradcafe. stop when it sees known entries, run the llm
 # and update db with new records.
 def fetch_new_data(pool):
+    """
+    Orchestrate the complete process of fetching and processing new grad records.
+    
+    This function manages the entire pipeline of:
+    1. Scraping new data from GradCafe
+    2. Processing the data through the LLM for entity extraction
+    3. Converting data formats (JSON -> JSONL -> cleaned JSON)
+    4. Loading processed data into the database
+    5. Cleaning up temporary files
+    
+    :param pool: Database connection pool for database operations
+    :type pool: psycopg_pool.ConnectionPool
+    :return: None
+    
+    Global variables:
+        - JSON_DATA_FILEPATH: Directory for temporary and permanent data files
+    """
     print("Starting fetch...")    
     scrape_new(1, 20) # start from page 1 and stop when it hits a known entry in db
     print("Running llm")
@@ -291,6 +438,24 @@ def close_pool(pool):  #pragma: no cover
 pool = ConnectionPool(DSN)
 
 def init_db():
+    """
+    Initialize and set up the complete database environment.
+    
+    This function performs the complete database initialization sequence:
+    1. Resets any existing database structure
+    2. Creates new tables
+    3. Loads initial data
+    4. Prints summary statistics and query results
+    
+    The function uses a connection pool that remains open until program termination
+    (handled by atexit).
+    
+    :return: Initialized database connection pool
+    :rtype: psycopg_pool.ConnectionPool
+    
+    Global variables:
+        - pool: Database connection pool
+    """
     try:
         reset_db(pool)
         create_db(pool)
@@ -304,13 +469,30 @@ def init_db():
 
 #Conversion required to compare the records in db against the new one read from gradcafe
 def get_grad_records_latest():
-  with pool.connection() as conn:
-    with conn.cursor() as cur:
-      cur.execute("SELECT * FROM gradrecords_latest")
-      rows = cur.fetchall()
-      columns = [desc[0] for desc in cur.description]
-      
-      records = [dict(zip(columns, row)) for row in rows]
+    """
+    Retrieve the most recent graduate records for comparison.
     
-  return records
+    This function fetches all records from the gradrecords_latest table
+    and converts them into a list of dictionaries. This format is used
+    for comparing against newly scraped records to avoid duplicates.
+    
+    :return: List of most recent graduate records
+    :rtype: list[dict]
+    
+    Global variables:
+        - pool: Database connection pool
+    
+    Note:
+        The returned dictionaries preserve the database column names as keys,
+        making them directly comparable with scraped JSON data.
+    """
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT * FROM gradrecords_latest")
+            rows = cur.fetchall()
+            columns = [desc[0] for desc in cur.description]
+            
+            records = [dict(zip(columns, row)) for row in rows]
+        
+    return records
 

@@ -186,6 +186,35 @@ def getQ10(cur):
             f"GRE AW outliers: {greaw_outliers}, Percentage of GRE AW outliers: {greaw_outl_percentage:>6.2f}%")
 
 def get_db_summary(pool):
+    """
+    Generate a comprehensive summary of graduate admissions data from the database.
+    
+    This function executes a series of analytical queries on the grad records database
+    to generate insights about:
+    - Fall 2025 application statistics
+    - International vs domestic student ratios
+    - GPA and GRE score distributions
+    - Acceptance rates
+    - Program-specific statistics
+    - Data quality metrics (outliers)
+    
+    :param pool: Database connection pool to use for queries
+    :type pool: psycopg_pool.ConnectionPool
+    :return: List of tuples containing query descriptions and their results
+    :rtype: list[tuple[str, str]]
+    
+    The function aggregates results from multiple query functions:
+    - Q1: Fall 2025 entry count
+    - Q2: International student percentage
+    - Q3: Average test scores
+    - Q4: American students' GPA
+    - Q5: Fall 2025 acceptance rate
+    - Q6: Accepted students' GPA
+    - Q7: JHU CS Masters statistics
+    - Q8: Georgetown CS PhD statistics
+    - Q9: Metrics excluding outliers
+    - Q10: Outlier analysis
+    """
     queries_and_functions = [
         ("How many entries do you have in your database who have applied for Fall 2025?",getQ1),
         ("What percentage of entries are from interna5onal students (not American or Other) (to two decimal places)?",getQ2),

@@ -6,9 +6,10 @@ import subprocess
 
 
 
-# Add src folder to Python path dynamically for test imports
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-from app import app
+# Add project root to Python path dynamically for test imports
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, project_root)
+from src.app import app
 
 @pytest.fixture
 def client():
@@ -24,7 +25,7 @@ def pytest_configure(config):
 
 @pytest.fixture(autouse=True, scope="session")
 def cleanup_data_dir():
-    data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "./src/data"))
+    data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../src/data"))
     print(f"Data directory: {data_dir}")
     keep_file = os.path.join(data_dir, "noname_0.json")
     # No-op before tests

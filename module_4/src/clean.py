@@ -14,6 +14,21 @@ def _print_record(record, indent=0):  # pragma: no cover
 
 
 def _getDetailUrlFromRow(row):
+    """
+    Extract the detail URL from a table row in the GradCafe results.
+
+    Looks for a 'See More' link in the row and constructs the full URL by combining
+    the base URL with the relative path. Handles URL normalization by removing
+    trailing content and fragment identifiers.
+
+    :param row: BeautifulSoup table row element to extract URL from
+    :type row: bs4.element.Tag
+    :return: Full URL to the detail page, or None if not found
+    :rtype: str or None
+
+    Global variables:
+        - urlBase: Base URL for GradCafe website
+    """
     # Search for the <a> tag with href containing '/result/' anywhere inside the row:
     detail_link = row.find('a', string='See More')
     detail_url = None
@@ -27,6 +42,18 @@ def _getDetailUrlFromRow(row):
     return detail_url
 
 def _isNotesRow(row):
+    """
+    Check if a table row contains user notes/comments.
+
+    Identifies comment rows by looking for a specific paragraph element with
+    certain CSS classes. The row must contain actual text content to be
+    considered a notes row.
+
+    :param row: BeautifulSoup table row element to check
+    :type row: bs4.element.Tag
+    :return: True if row contains notes, False otherwise
+    :rtype: bool
+    """
     # this seems to be the only way to identify Notes row    
     div = row.find('p', class_='tw-text-gray-500 tw-text-sm tw-my-0')
 
@@ -52,7 +79,36 @@ record_template = {
     "comments": ""
 }       
 
-def clean_data(rows, i):        
+def clean_data(rows, i):
+        """
+        Process and clean data from GradCafe result rows into a structured record.
+
+        Takes three consecutive rows from the results table and extracts various fields
+        including program details, scores, and comments. Handles missing data and
+        ensures consistent record structure.
+
+        :param rows: List of all table rows from the page
+        :type rows: list[bs4.element.Tag]
+        :param i: Index of the first row of the record to process
+        :type i: int
+        :return: Tuple containing (processed record dict, bool indicating if comments were found)
+        :rtype: tuple[dict, bool]
+
+        Record fields:
+            - program: Program and University name
+            - Degree: Degree type (PhD, Masters, etc.)
+            - date_added: Date the record was added
+            - status: Application status
+            - url: Link to detailed view
+            - term: Academic term
+            - US/International: Student nationality
+            - GRE/GRE V/GRE AW: Test scores
+            - GPA: Grade Point Average
+            - comments: User notes if present
+
+        Global variables:
+            - record_template: Template dictionary with default values
+        """
         row1 = rows[i]
         row2 = rows[i+1]
         row3 = rows[i+2]
@@ -154,27 +210,3 @@ def clean_data(rows, i):
 
         #_print_record(record)
         return record, commentRow
-
-        '''
-        print("Row4 Data:")
-        for item in row4_data:
-            print(item)
-        Row4 Data:
-            professor took interview and then offer letter come
-        '''
-
-        """
-        detail_url = _getDetailUrlFromRow(row)
-        summary_cols = row.find_all('td')
-        summary_data = [col.get_text(strip=True) or "N/A" for col in summary_cols]
-        if detail_url != None:
-            record = {                
-                "detail_url": detail_url,
-                #"summary": summary_data
-            }
-            record.update(getRecordFromDetailPage(detail_url) or {})
-            print(record)
-        #else:
-            #print("No detail URL found for row:", summary_data)
-        
-        """

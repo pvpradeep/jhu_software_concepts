@@ -3,8 +3,8 @@ from time import time
 import psycopg
 from flask import Flask, abort, render_template, request, url_for, redirect
 import time
-from query_data import get_db_summary
-from load_data import init_db, fetch_new_data
+from src.query_data import get_db_summary
+from src.load_data import init_db, fetch_new_data
 import atexit
 from threading import Lock
 
@@ -75,18 +75,46 @@ def _block_analysis_during_update():
 
 @app.route('/')
 def summary():
-  global results
-  global update_summary
-  if update_summary:
-    results = get_db_summary(pool)
-    update_summary = False
-  #close_db(pool)
-  return render_template('summary.html', queries=results)
+    """
+    Render the summary page with database analysis results.
+    
+    This function serves as the main route (/) handler that displays summary statistics 
+    from the database. It uses a caching mechanism through the update_summary flag to 
+    avoid recalculating results on every request.
+    
+    :return: Rendered summary.html template with query results
+    :rtype: flask.Response
+    
+    Global variables:
+        - results: Cached database summary results
+        - update_summary: Flag indicating if summary needs recalculation
+    """
+    global results
+    global update_summary
+    if update_summary:
+        results = get_db_summary(pool)
+        update_summary = False
+    #close_db(pool)
+    return render_template('summary.html', queries=results)
 
 
 
 @app.route("/fetch-data", methods=["POST"])
 def fetch_data():
+    """
+    Fetch and process new data from GradCafe.
+    
+    This route handler triggers the scraping of new data and its processing through
+    the LLM pipeline. It uses a global flag to prevent concurrent updates and includes
+    a small delay to ensure async operations complete.
+    
+    :return: Redirect to summary page after completion
+    :rtype: werkzeug.wrappers.Response
+    :raises: HTTP 409 if an update is already in progress (handled by before_request)
+    
+    Global variables:
+        - update_in_progress: Flag indicating active update operation
+    """
     global update_in_progress
     update_in_progress = True
     
@@ -102,17 +130,24 @@ def fetch_data():
 
 @app.route("/update-analysis", methods=["POST"])
 def update_analysis():
+    """
+    Trigger a recalculation of the database analysis summary.
+    
+    This route handler sets the update_summary flag to force a recalculation
+    of the summary statistics on the next visit to the summary page. Concurrent
+    updates are prevented through a before_request handler.
+    
+    :return: Redirect to summary page to show updated analysis
+    :rtype: werkzeug.wrappers.Response
+    :raises: HTTP 409 if a data update is in progress (handled by before_request)
+    
+    Global variables:
+        - update_in_progress: Flag checked for concurrent operations
+        - update_summary: Flag triggering summary recalculation
+        - update_in_progress_lock: Lock for thread-safe operations
+    """
     global update_in_progress, update_summary, update_in_progress_lock
-    '''
-    # Explicitly check the flag here for testability
-    with update_in_progress_lock:
-        if update_in_progress:
-            abort(409, description='Cannot run analysis update while data update is in progress')
-            return
-    if update_in_progress:
-      abort(409, description='Cannot run analysis update while data update is in progress')
-      return
-    '''
+
     update_summary = 1
     print("Will recalculate summary")
     return redirect(url_for("summary"))
