@@ -45,8 +45,9 @@ jobs:
         pip install pytest pytest-cov
         pip install -e .
 
-    - name: Create test database
+    - name: Create or reset test database
       run: |
+        PGPASSWORD='' psql -h localhost -U postgres -p 5433 -c 'DROP DATABASE IF EXISTS jhudb_gradrec;'
         PGPASSWORD='' psql -h localhost -U postgres -p 5433 -c 'CREATE DATABASE jhudb_gradrec;'
 
     - name: Run tests with pytest
