@@ -33,7 +33,7 @@ Environment Variables
 ---------------------
 The following environment variables need to be set:
 
-* ``DATABASE_URL`` - PostgreSQL connection string (e.g., ``postgresql://user:pass@localhost:5432/dbname``)
+* ``DATABASE_URL`` - PostgreSQL connection string (e.g., ``postgresql://user@localhost:5432/dbname``)
 * ``TEST_ENV`` - Set to "True" when running tests to use test database and fixtures
 * ``LOG_LEVEL`` - (Optional) Logging level (default: INFO)
 

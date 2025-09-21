@@ -49,7 +49,7 @@ Test Environment
 Set up test environment::
 
     export TEST_ENV=True
-    export DATABASE_URL=postgresql://user:pass@localhost:5432/test_db
+    export DATABASE_URL=postgresql://user:localhost:5432/test_db
 
 Test Markers
 -------------
