@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: m4_pytestDoc
+Version: 25.10
+Requires-Dist: flask
+Requires-Dist: psycopg
+Requires-Dist: psycopg-pool
+Requires-Dist: beautifulsoup4
+Requires-Dist: urllib3
+Requires-Dist: sphinx
+Dynamic: requires-dist
