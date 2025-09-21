@@ -2,9 +2,9 @@
 
 # Graduate School Application Data Analysis
 
-[![Documentation Status](https://readthedocs.org/projects/m4-pytestdoc/badge/?version=latest)](https://m4-pytestdoc.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/jhu-m4/badge/?version=latest)](https://jhu-m4.readthedocs.io/en/latest/?badge=latest)
 
-📚 [Read the full documentation](https://m4-pytestdoc.readthedocs.io/en/latest/)
+📚 [Read the full documentation](https://jhu-m4.readthedocs.io/en/latest/)
 
 A Python application for analyzing graduate school application data from GradCafe, featuring web scraping, data analysis, and a Flask web interface.
 
@@ -142,7 +142,7 @@ module_4/
 4. Run tests and build documentation
 5. Submit a pull request
 
-
+```
 ../module_4 % tree -L 2
 module_4 % tree -L 2
 .
@@ -186,3 +186,4 @@ module_4 % tree -L 2
 └── venv
 
 
+```
