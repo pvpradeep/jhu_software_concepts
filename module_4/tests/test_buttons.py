@@ -22,25 +22,30 @@ def test_update_analysis_not_busy(client):
 
 @pytest.mark.buttons
 def test_update_analysis_while_fetch_in_progress(client):
-	# Patch fetch-data endpoint to simulate a long-running operation
-	import sys, os
-	sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
-	import app as app_module
-
-	def slow_fetch_data(*args, **kwargs):
-		time.sleep(1)
-		return app_module.fetch_data.__wrapped__(*args, **kwargs) if hasattr(app_module.fetch_data, '__wrapped__') else ("done", 200)
-
-	with patch.object(app_module, 'fetch_data', side_effect=slow_fetch_data):
-		# Start fetch-data in a thread
-		def fetch():
-			client.post("/fetch-data")
-		t = threading.Thread(target=fetch)
-		t.start()
-		time.sleep(0.2)  # Give fetch-data time to acquire the in-progress flag
-		# Now try update-analysis
-		resp = client.post("/update-analysis", follow_redirects=False)
-		t.join()
-		assert resp.status_code == 409, f"Expected 409, got {resp.status_code}"
+    """Test that update-analysis is blocked while fetch-data is in progress"""
+    event = threading.Event()
+    
+    def fetch():
+        # Start the fetch request and signal that we've begun
+        client.post("/fetch-data")
+        event.set()
+        # Keep the thread alive to simulate long-running operation
+        time.sleep(0.5)
+    
+    # Start fetch in a thread
+    t = threading.Thread(target=fetch)
+    t.start()
+    
+    # Wait for fetch operation to start
+    event.wait(timeout=1.0)
+    
+    # Try update-analysis while fetch is still running
+    resp = client.post("/update-analysis", follow_redirects=False)
+    
+    # Clean up
+    t.join()
+    
+    # Should get 409 Conflict since fetch is in progress
+    assert resp.status_code == 409, f"Expected 409, got {resp.status_code}"
 
 

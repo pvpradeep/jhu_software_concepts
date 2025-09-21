@@ -4,23 +4,25 @@
   <h1>{% block title %} Database Analysis {% endblock %}</h1>
   <div class="fetch-button-container">
     <form action="{{ url_for('fetch_data') }}" method="post" style="display: inline;">
-      <button type="submit" class="fetch-button" data-tooltip="Fetch new data from source">
+      <button type="submit" class="fetch-button" data-tooltip="Fetch new data from source" data-testid="pull-data-btn">
         Pull Data
       </button>
     </form>
     <form action="{{ url_for('update_analysis') }}" method="post" style="display: inline;">
-      <button type="submit" class="fetch-button" data-tooltip="Reload the summary page with latest data">
+      <button type="submit" class="fetch-button" data-tooltip="Reload the summary page with latest data" data-testid="update-analysis-btn">
         Update Summary
       </button>
     </form>
   </div>
   {% for query in queries %}
-    <div class='query query{{ loop.index }}'>
-      <p class="query-text query{{ loop.index }}">{{ loop.index }}. {{ query.0 }}</p>
-      <p class="answer-text ans{{ loop.index }}"><strong>Ans.</strong> {{ query.1 | replace('\n', '<br>') | safe }}</p>
+    <div class='query query{{ loop.index }}' data-testid="query-item">
+      <p class="query-text query{{ loop.index }}" data-testid="query-text">{{ loop.index }}. {{ query.0 }}</p>
+      <p class="answer-text ans{{ loop.index }}">
+        <span data-testid="answer-label"><strong>Ans.</strong></span>
+        {{ query.1 | replace('\n', '<br>') | safe }}
+      </p>
     </div>
   {% endfor %}
 {% endblock %}
 
 
-      
