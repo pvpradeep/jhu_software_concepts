@@ -1,0 +1,16 @@
+name: CI
+
+on:
+  push:
+    paths:
+      - 'module_4/**'
+    branches: [ main ]
+  pull_request:
+    paths:
+      - 'module_4/**'
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  module4-tests:
+    uses: ./module_4/.github/workflows/pytest.yml

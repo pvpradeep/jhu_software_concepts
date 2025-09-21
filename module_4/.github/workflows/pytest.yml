@@ -1,20 +1,20 @@
-name: Python Tests
+name: Module 4 Tests
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_call:  # This makes the workflow reusable
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./module_4
     
     services:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_DB: gradcafe_test_db
+          POSTGRES_DB: jhudb_gradrec
           POSTGRES_HOST_AUTH_METHOD: trust
         ports:
           - 5433:5432
