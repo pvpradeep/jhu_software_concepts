@@ -69,12 +69,6 @@ jobs:
       run: |
         pytest --cov=src/ --cov-report=xml -v
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        fail_ci_if_error: true
-
     - name: Build documentation
       run: |
         cd docs
