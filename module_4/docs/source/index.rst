@@ -1,23 +1,26 @@
-.. m4_pytestDoc documentation master file, created by
-   sphinx-quickstart on Sat Sep 20 16:31:18 2025.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. Graduate School Application Data Analysis documentation master file
 
-m4_pytestDoc documentation
-==========================
+Graduate School Application Data Analysis
+==========================================
 
-This documentation covers the Graduate School Application Data Analysis project.
-
-Application Components
-----------------------
+A Python application for analyzing graduate school application data from GradCafe, featuring web scraping, data analysis, and a Flask web interface.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Getting Started:
 
-   modules/data_loading
+   pages/overview
+   pages/installation
+   pages/architecture
+   pages/testing
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API Reference:
+
    modules/web_scraping
    modules/data_cleaning
+   modules/data_loading
    modules/data_query
    modules/web_app
    modules/configuration
