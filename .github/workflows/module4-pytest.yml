@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./module_4
+        working-directory: ${{ github.workspace }}/module_4
     
     services:
       postgres:
@@ -44,6 +44,15 @@ jobs:
         pip install -r docs/requirements.txt
         pip install pytest pytest-cov
         pip install -e .
+
+    - name: Setup test environment
+      run: |
+        # Create data directory
+        mkdir -p src/data
+        # Set environment variables
+        echo "TEST_ENV=True" >> $GITHUB_ENV
+        echo "USE_SAMPLE_HTML=1" >> $GITHUB_ENV
+        echo "PYTHONPATH=$GITHUB_WORKSPACE/module_4" >> $GITHUB_ENV
 
     - name: Setup database and user
       run: |
