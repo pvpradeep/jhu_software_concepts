@@ -1,15 +1,18 @@
 name: CI
 
+# Main CI workflow that routes to module-specific workflows
 on:
   push:
     paths:
       - 'module_4/**'
+      - '.github/workflows/**'  # Also trigger on workflow file changes
     branches: [ main ]
   pull_request:
     paths:
       - 'module_4/**'
+      - '.github/workflows/**'  # Also trigger on workflow file changes
     branches: [ main ]
-  workflow_dispatch:
+  workflow_dispatch:  # Allow manual triggers
 
 jobs:
   module4-tests:
