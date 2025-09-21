@@ -16,8 +16,8 @@ on:
 
 jobs:
   module4-tests:
-    uses: ./module_4/.github/workflows/pytest.yml@main
+    uses: ./.github/workflows/module4-pytest.yml@main
 
   # Future modules can be added here like:
   # module5-tests:
-  #   uses: ./module_5/.github/workflows/pytest.yml@main
+  #   uses: ./.github/workflows/module5-pytest.yml@main
